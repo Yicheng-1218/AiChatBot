@@ -117,7 +117,8 @@ def custom_search(event, intent):
     chat_gpt.send_messages(create_gpt_messages(result,user_query))
     reply=chat_gpt.get_reply()\
                     .replace('。','。\n\r')\
-                    .replace('：','：\n\r')
+                    .replace('：','：\n\r')\
+                    .replace(')[',')\n\r[')
                     
     linebot.reply_message(event['replyToken'], TextSendMessage(text=reply))
 
