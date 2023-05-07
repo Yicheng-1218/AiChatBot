@@ -57,7 +57,7 @@ class ChatGPT(BaseApi):
 
 
 class GPTddic(BaseApi):
-    url='http://kafka-middle-ddic2023ws.apps.digiwincloud.com/api/ai/RH'
+    url=json.load(open('./api_key.json'))['OpenAI']['DDIC_GPT']
     
     def __init__(self,prompt=None) -> None:
         if prompt is  not None:
@@ -71,39 +71,7 @@ class GPTddic(BaseApi):
         
         super().__init__(self.url,timeout=120)
     
-    
-
-    # def analyze_message(self,message):
-    #     data={
-    #         "key":"0",
-    #         "data": {
-    #             "topic": "AI",
-    #             "method": "ChatGPT",
-    #             "data": {
-    #                 "prompt": [
-    #                     {
-    #                         "role":"system",
-    #                         "content":"""I would like you to play the role of a language expert and assist me in determining the intention of my input messages and some related key information.
-    #                         For example:
-    #                         1. Is this a fraudulent phone call? 0926444326 You will help me determine it as Inquire About Fraudulent TEL and label the phone number as TEL the label must be require to determine intent.
-    #                         2. Is this website problematic? https://www.lorem.com You will help me determine it as Inquire About Fraudulent URL and label the URL as URL the label must be require to determine intent.
-    #                         3. Is this a fraudulent account ID? aawx1234 You will help me determine it as Inquire About Fraudulent ID and label aawx1234 as ID the label must be require to determine intent.
-    #                         4. Regarding food, drugs, and cosmetics, determine it as Inquire About Food and Drug, entities=[]. 
-    #                         5. Other types of inquiries are classified as Other Inquiries.
-    #                         6. Meaningless content such as greeting messages is classified as None, entities=[] .
-    #                         All intentions can only be categorized as Inquire About Fraudulent ID, Inquire About Fraudulent TEL, Inquire About Fraudulent URL, Inquire About Food and Drug, Other Inquiries, and None.
-    #                         Please use only these intention types.When answering, please use only the JSON format, The format should be {\"query\" ... ,\"intent\": ..., \"entities\": [{\"category\": ... , \"text\":...]}.
-    #                         And avoid excessive explanations or descriptions. My first question is """+message
-    #                     }
-    #                 ]
-    #             },
-    #             "temperature": 0.7,
-    #             "top_p": 1
-    #         }
-    #     }
-    #     self._post(data=data)
         
-    
     def send_messages(self, messages):
         if not isinstance(messages, (list, tuple)):
             messages = [messages]
@@ -147,8 +115,6 @@ class GptMessage:
 
 
 if __name__ == '__main__':
-    # key = json.load(open('./api_key.json'))['OpenAI']['api_key']
-
     gpt = ChatGPT(Certification('./api_key.json'))
     Messages = [
         GptMessage('system', """You are an anti-fraud expert who is familiar with various fraud schemes.
@@ -156,7 +122,7 @@ if __name__ == '__main__':
                 And always respond in Chinese Traditional.
                 You need to do the first thing is Self introduction.
                 """),
-        GptMessage('user', '這是詐騙電話嗎? +886963535138')
+        GptMessage('user', '這是詐騙電話嗎?')
     ]
     gpt.send_messages(Messages)
     print(gpt.get_reply())
