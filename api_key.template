@@ -1,0 +1,21 @@
+{
+    "Line": {
+        "api_key": ""
+    },
+    "OpenAI": {
+        "api_key": ""
+    },
+    "google_search": {
+        "api_key": "",
+        "cx": ""
+    },
+    "AZURE": {
+        "CLU": {
+            "api_key": "",
+            "endpoint": "",
+            "project_name": "",
+            "deployment_name": "",
+            "intent_vault": 0
+        }
+    }
+}
