@@ -8,7 +8,6 @@ import azure.functions as func
 from .api import *
 import traceback
 import json
-from threading import Thread
 
 cert = Certification('api_key.json')
 
@@ -64,7 +63,6 @@ def search_tel(event, intent):
 def search_id(event, intent):
     result=[]
     id=''
-    print(intent.entities)
     for lineId in intent.entities:
         if lineId['category']=='lineId': 
             id=lineId['text']
@@ -111,7 +109,7 @@ def custom_search(event, intent):
 
     # Google搜尋
     result=google_search.get(user_query).data
-    print(result)
+    logging.info(result)
     
     chat_gpt.callback=lambda x:x['data']
     chat_gpt.send_messages(create_gpt_messages(result,user_query))

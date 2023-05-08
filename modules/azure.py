@@ -2,6 +2,7 @@ from .base_api import BaseApi
 from .certify import Certification
 import json
 
+
 class LanguageUnderstanding(BaseApi):
 
     def __init__(self, cert, headers=None, callback=None, timeout=30, endpoint=None, intent_vault=0, project_name=None, deploy_name=None) -> None:
@@ -52,7 +53,6 @@ class LanguageUnderstanding(BaseApi):
 
         self._post(data=data)
 
-
         return Intent(self.data, self.intent_vault)
 
 
@@ -61,7 +61,7 @@ class Intent:
         try:
             if not isinstance(data, dict):
                 raise TypeError('data must be dict type')
-            
+
             self.query = data['result']['query']
             prediction = data['result']['prediction']
             self.topIntent = prediction['topIntent'] \
@@ -77,15 +77,13 @@ class Intent:
     @staticmethod
     def new_from_dict(data):
         intent = Intent({})
-        data=json.loads(data)
+        data = json.loads(data)
         intent.query = data['query']
         intent.intents = data['intents']
         intent.topIntent = data['intent']
         intent.entities = data['entities']
         return intent
 
+
 if __name__ == '__main__':
-    key = Certification('./api_key.json')
-    clu = LanguageUnderstanding(key)
-    intent = clu.analyze_message('這是詐騙網站嗎? https://www.google.com/')
-    print(intent.topIntent)
+    pass

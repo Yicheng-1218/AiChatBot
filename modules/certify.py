@@ -1,5 +1,6 @@
 import json
 import traceback
+import logging
 
 
 class Certification:
@@ -16,7 +17,7 @@ class Certification:
         except TypeError:
             raise TypeError('cert file must be json file')
         except:
-            traceback.print_exc()
+            logging.info(traceback.format_exc())
             raise Exception('unknown error')
 
     def __getitem__(self, key):
