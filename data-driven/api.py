@@ -1,9 +1,5 @@
-# try:
-#     from modules.base_api import BaseApi
-# except:
-#     import sys
-#     sys.path.append('c:/Users/cheng/Desktop/Azure Function App')
-#     from modules.base_api import BaseApi
+from lxml import etree
+import requests
 from modules.base_api import BaseApi
 import re
 
@@ -81,7 +77,28 @@ class FraudulentInfo(Gov165):
         self.set_url(url)
         return self._get()
 
-
+class Urlvoid:
+    DOMAIN_NOT_FOUND=-1
+    def __init__(self) -> None:
+        self.base_url='https://www.urlvoid.com/scan/'
+        self.__url=''
+    
+    def get(self,url):
+        """Get the website trust score"""
+        domain=re.match(r"([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}", url).group().replace('www.','')
+        self.__url=self.base_url+domain
+        res=requests.get(self.__url)
+        root=etree.HTML(res.text)
+        detections_counts=root.xpath('//span[@class="label label-success"]/text()')
+        if len(detections_counts)<1:
+            return self.DOMAIN_NOT_FOUND
+        score=(1-eval(detections_counts[0]))*100
+        return score
+    
+    @property
+    def url(self):
+        return self.__url
+    
 if __name__ == '__main__':
     # api = FDAInfo().get()
     # api=FraudulentID().get('ht354')

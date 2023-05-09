@@ -53,7 +53,7 @@ def search_tel(event, intent):
                                 '如果您已經受到損失，應立即向當地警方報告，提供所有相關證據。\n\r'+
                                 '如果您需要進一步的幫助，可以更詳細說明您的狀況。\n\r'+ 
                                 '另外提醒大家，請務必保持警覺，不要輕信來自陌生人的信息和電話，需要採取一些防範措施來避免被詐騙。\n\r'+
-                                '(來源: https://https://165.npa.gov.tw/)')
+                                '(來源: https://165.npa.gov.tw/)')
     else:
         res=TextSendMessage(text=f'經系統查詢{tel}並不存在於資料庫中，但仍有可能需要注意此號碼。')
         
@@ -74,7 +74,7 @@ def search_id(event, intent):
                                 '如果您已經受到損失，應立即向當地警方報告，提供所有相關證據。\n\r'+
                                 '如果您需要進一步的幫助，可以更詳細說明您的狀況。\n\r'+
                                 '另外提醒大家，請務必保持警覺，不要輕信來自陌生人的信息和電話，需要採取一些防範措施來避免被詐騙。\n\r'+
-                                '(來源: https://https://165.npa.gov.tw/)')
+                                '(來源: https://165.npa.gov.tw/)')
     else:
         res=TextSendMessage(text=f'經系統查詢{id}並不存在於資料庫中，但仍有可能需要注意此帳號。')
     linebot.reply_message(event['replyToken'], res)
@@ -95,9 +95,14 @@ def search_url(event, intent):
                                 '如果您已經受到損失，應立即向當地警方報告，提供所有相關證據。\n\r'+
                                 '如果您需要進一步的幫助，可以更詳細說明您的狀況。\n\r'+
                                 '另外提醒大家，請務必保持警覺，不要輕信來自陌生人的信息和電話，需要採取一些防範措施來避免被詐騙。\n\r'+
-                                '(來源: https://https://165.npa.gov.tw/)')
+                                '(來源: https://165.npa.gov.tw/)')
     else:
-        res=TextSendMessage(text=f'經系統查詢{url}並不存在於資料庫中，但仍有可能需要注意此網站。')
+        urlvoid=Urlvoid()
+        trust_score=urlvoid.get(url)
+        if trust_score!=urlvoid.DOMAIN_NOT_FOUND:
+            res=TextSendMessage(text=f'經系統查詢{url}並不存在於警政資料庫中，但經過網站信任度分析，此網站信任度為{trust_score}。\n(來源: {urlvoid.url})')
+        else:
+            res=TextSendMessage(text=f'經系統查詢{url}並不存在於資料庫中，但仍有可能需要注意此網站。')
     linebot.reply_message(event['replyToken'], res)
 
 

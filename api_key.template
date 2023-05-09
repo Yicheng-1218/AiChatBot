@@ -1,6 +1,8 @@
+# Modify value and change file name to *.json
 {
     "Line": {
-        "api_key": ""
+        "channel_access_token": "",
+        "channel_secret":""
     },
     "OpenAI": {
         "api_key": ""
