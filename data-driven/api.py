@@ -42,9 +42,15 @@ class FraudulentTEL(Gov165):
         return self._post({'keyWord':''})
 
 class FraudulentURL(Gov165):
-    def get(self,url):
+    PARSE_ERROR=-2
+    def get(self,target):
         url=self.base_url+'query/findFraudInvestment'
-        self.callback=lambda x:[e for e in x if url in e['webUrl']]
+        self.set_url(url)
+        domain=re.search(r"([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}", target)
+        if domain is None:
+            return self.PARSE_ERROR
+        domain=domain.group().replace('www.','')
+        self.callback=lambda data:[element for element in data if domain in element['webUrl']]
         return self._post({'keyWord':''})
 
     def get_list(self):
@@ -79,13 +85,17 @@ class FraudulentInfo(Gov165):
 
 class Urlvoid:
     DOMAIN_NOT_FOUND=-1
+    PARSE_ERROR=-2
     def __init__(self) -> None:
         self.base_url='https://www.urlvoid.com/scan/'
         self.__url=''
     
     def get(self,url):
         """Get the website trust score"""
-        domain=re.match(r"([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}", url).group().replace('www.','')
+        domain=re.search(r"([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}", url)
+        if domain is None:
+            return self.PARSE_ERROR
+        domain=domain.group().replace('www.','')
         self.__url=self.base_url+domain
         res=requests.get(self.__url)
         root=etree.HTML(res.text)

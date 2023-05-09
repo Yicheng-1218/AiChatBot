@@ -15,6 +15,7 @@ class GoogleSearch(BaseApi):
         super().__init__(self.base_url, callback=callback, timeout=timeout)
 
     def format_data(self, data):
+
         try:
             return {
                 'title': data['title'],
@@ -33,5 +34,6 @@ class GoogleSearch(BaseApi):
         }
         self.set_url(self.base_url, **api_query)
         # print(self.url)
-        self.callback = lambda x: [self.format_data(k) for k in x['items']]
+        self.callback = lambda x: [
+            self.format_data(k) for k in x.get('items', [])]
         return self._get()

@@ -59,7 +59,7 @@ class ChatGPT(BaseApi):
 class GPTddic(BaseApi):
     url = json.load(open('./api_key.json'))['OpenAI']['DDIC_GPT']
 
-    def __init__(self, prompt=None) -> None:
+    def __init__(self, prompt=None, callback=None) -> None:
         if prompt is not None:
             try:
                 self.prompt = json.load(open('./prompt.json'))
@@ -69,7 +69,7 @@ class GPTddic(BaseApi):
                 else:
                     raise TypeError('prompt must be dict or json file')
 
-        super().__init__(self.url, timeout=120)
+        super().__init__(self.url, timeout=120, callback=callback)
 
     def send_messages(self, messages):
         if not isinstance(messages, (list, tuple)):

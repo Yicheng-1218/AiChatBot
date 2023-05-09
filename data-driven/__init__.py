@@ -8,13 +8,14 @@ import azure.functions as func
 from .api import *
 import traceback
 import json
+from concurrent.futures import ProcessPoolExecutor
 
 cert = Certification('api_key.json')
 
 handler = WebhookHandler(cert)
 linebot = LineBotApi(cert)
 google_search = GoogleSearch(cert)
-chat_gpt = GPTddic(prompt='./prompt.json')
+chat_gpt = GPTddic(prompt='./prompt.json',callback=lambda x:x['data'])
 
 
     
@@ -38,6 +39,7 @@ def create_gpt_messages(search,query):
 
 @handler.intent('Inquire About Fraudulent TEL')
 def search_tel(event, intent):
+    user_query = event['message']['text']
     result=[]
     tel=''
     for ele in intent.entities:
@@ -48,61 +50,78 @@ def search_tel(event, intent):
     
     # chat_gpt.callback = lambda x: x['choices'][0]['message']['content']
     if len(result) != 0:
-        res=TextSendMessage(text=f'根據查詢結果，{tel} 被回報是一個詐騙電話號碼。\n\r'+
-                                '如果您收到了此電話，請勿透露個人信息並以任何方式回應，這可能會導致您被騙取金錢或其他財物。\n\r'+
-                                '如果您已經受到損失，應立即向當地警方報告，提供所有相關證據。\n\r'+
-                                '如果您需要進一步的幫助，可以更詳細說明您的狀況。\n\r'+ 
-                                '另外提醒大家，請務必保持警覺，不要輕信來自陌生人的信息和電話，需要採取一些防範措施來避免被詐騙。\n\r'+
-                                '(來源: https://165.npa.gov.tw/)')
+        # result=f'{tel} 被回報是一個詐騙電話號碼。\n\r(來源: https://165.npa.gov.tw/)'
+        # chat_gpt.send_messages(create_gpt_messages(result,user_query))
+        res=TextSendMessage(text=f'{tel} 被回報是一個詐騙電話號碼。\n\r(來源: https://165.npa.gov.tw/)')
     else:
         res=TextSendMessage(text=f'經系統查詢{tel}並不存在於資料庫中，但仍有可能需要注意此號碼。')
         
     linebot.reply_message(event['replyToken'], res)
 
+
+
+        
 @handler.intent('Inquire About Fraudulent ID')
 def search_id(event, intent):
-    result=[]
-    id=''
-    for lineId in intent.entities:
-        if lineId['category']=='lineId': 
-            id=lineId['text']
-            result=FraudulentID().get(id).data
-            break
-    if len(result)!=0:
-        res=TextSendMessage(text=f'根據查詢結果，{id} 被回報是一個詐騙帳號。\n\r'+
-                                '如果您收到了此帳號的訊息，請勿透露個人信息並以任何方式回應，這可能會導致您被騙取金錢或其他財物。\n\r'+
-                                '如果您已經受到損失，應立即向當地警方報告，提供所有相關證據。\n\r'+
-                                '如果您需要進一步的幫助，可以更詳細說明您的狀況。\n\r'+
-                                '另外提醒大家，請務必保持警覺，不要輕信來自陌生人的信息和電話，需要採取一些防範措施來避免被詐騙。\n\r'+
-                                '(來源: https://165.npa.gov.tw/)')
-    else:
-        res=TextSendMessage(text=f'經系統查詢{id}並不存在於資料庫中，但仍有可能需要注意此帳號。')
+    user_query = event['message']['text']
+    # result=[]
+    # id=''
+    # relist=re.findall(r'@?[a-zA-z0-9(.-_)]{4,}', user_query)
+    
+    # TODO: 這裡要改成多執行緒
+    # def search_id(id):
+    #     url='https://165.npa.gov.tw/api/queryLineId/'
+    #     try:
+    #         return requests.get(url+id).json()
+    #     except:
+    #         return []    
+    # with ProcessPoolExecutor() as executor:
+    #     for i in executor.map(search_id,relist):
+    #         result.append(i)
+    
+    
+    # if max([len(e) for e in result]) > 0:
+    #     for i in result:
+    #         try:
+    #             id=i[0].get('lineId')
+    #         except:
+    #             pass
+    #     result=f'{id} 被回報是一個詐騙帳號。\n\r(來源: https://165.npa.gov.tw/)'
+    #     print(result)
+    #     chat_gpt.send_messages(create_gpt_messages(result,user_query))
+    #     res=TextSendMessage(text=chat_gpt.get_reply())
+    # else:
+    #     res=TextSendMessage(text=f'經系統查並不存在於資料庫中，但仍有可能需要注意此帳號。')
+    res=TextSendMessage(text=f'此功能維修中')
     linebot.reply_message(event['replyToken'], res)
 
 
 @handler.intent('Inquire About Fraudulent URL')
 def search_url(event, intent):
+    user_query = event['message']['text']
     result=[]
-    url=''
+    url='url'
     for url in intent.entities:
         if url['category']=='URL': 
             url=url['text']
             result=FraudulentURL().get(url).data
             break
+        
+        
     if len(result)!=0:
-        res=TextSendMessage(text=f'根據查詢結果，{url} 被回報是一個詐騙網站。\n\r'+
-                                '如果您收到了此網站的訊息，請勿透露個人信息並以任何方式回應，這可能會導致您被騙取金錢或其他財物。\n\r'+
-                                '如果您已經受到損失，應立即向當地警方報告，提供所有相關證據。\n\r'+
-                                '如果您需要進一步的幫助，可以更詳細說明您的狀況。\n\r'+
-                                '另外提醒大家，請務必保持警覺，不要輕信來自陌生人的信息和電話，需要採取一些防範措施來避免被詐騙。\n\r'+
-                                '(來源: https://165.npa.gov.tw/)')
+        # result=f'({url})\n被回報是一個詐騙網站。\n\r(來源: https://165.npa.gov.tw/)'
+        # chat_gpt.send_messages(create_gpt_messages(result,user_query))
+        
+        res=TextSendMessage(text=f'({url})\n被回報是一個詐騙網站。\n\r(來源: https://165.npa.gov.tw/)')
     else:
         urlvoid=Urlvoid()
         trust_score=urlvoid.get(url)
         if trust_score!=urlvoid.DOMAIN_NOT_FOUND:
-            res=TextSendMessage(text=f'經系統查詢{url}並不存在於警政資料庫中，但經過網站信任度分析，此網站信任度為{trust_score}。\n(來源: {urlvoid.url})')
+            res=TextSendMessage(text=f'經系統查詢\n({url})\n並不存在於警政資料庫中，但經過網站信任度分析，此網站信任度為{trust_score}。\n(來源: {urlvoid.url})')
         else:
-            res=TextSendMessage(text=f'經系統查詢{url}並不存在於資料庫中，但仍有可能需要注意此網站。')
+            res=TextSendMessage(text=f'經系統查詢({url})並不存在於資料庫中，但仍有可能需要注意此網站。')
+            
+    
     linebot.reply_message(event['replyToken'], res)
 
 
@@ -116,7 +135,6 @@ def custom_search(event, intent):
     result=google_search.get(user_query).data
     logging.info(result)
     
-    chat_gpt.callback=lambda x:x['data']
     chat_gpt.send_messages(create_gpt_messages(result,user_query))
     reply=chat_gpt.get_reply()\
                     .replace('。','。\n\r')\
@@ -128,7 +146,21 @@ def custom_search(event, intent):
 
 @handler.intent('None')
 def none_intent(event, intent):
-    linebot.reply_message(event['replyToken'], TextSendMessage(text='抱歉，我不太懂您的意思，請再說一次'))
+    ref={
+        'Inquire About Fraudulent TEL':'詢問詐騙電話',
+        'Inquire About Fraudulent ID':'詢問詐騙帳號',
+        'Inquire About Fraudulent URL':'詢問詐騙網站',
+        'Other Inquiries':'詢問謠言或是詐騙訊息'
+    }
+    
+    suffix=ref.get(intent.intents[0]['category']) if intent.intents[0]['confidenceScore']>0.8 else None
+    
+        
+    if suffix is None:
+        linebot.reply_message(event['replyToken'], TextSendMessage(text='抱歉，我不太懂您的意思，請再說一次'))
+    linebot.reply_message(event['replyToken'], TextSendMessage(text=f'抱歉，我不太懂您的意思，您是想{suffix}嗎? 可以詳細再說明一次給我哦'))
+    
+        
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
