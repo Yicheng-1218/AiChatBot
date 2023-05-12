@@ -1,7 +1,6 @@
 import random
 from time import sleep
 from bs4 import BeautifulSoup
-from requests import get
 from .base_api import BaseApi
 from .certify import Certification
 
