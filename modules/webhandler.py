@@ -1,12 +1,11 @@
 import json
-from .azure import LanguageUnderstanding, Intent
 from .certify import Certification
 import base64
 import hashlib
 import hmac
-
-
-luis = None
+from .chat_gpt import ChatGPT
+import logging
+import traceback
 
 
 class InvalidSignatureError(Exception):
@@ -36,15 +35,13 @@ def validate_signature(body, x_signature: str, channel_secret: str):
 
 
 class WebhookHandler:
-    def __init__(self, cert) -> None:
-        self.intents = {}
+    intents = {}
 
+    def __init__(self, cert: Certification) -> None:
         if isinstance(cert, Certification):
-            self._cert = cert
+            self.channel_secret = cert['Line']['channel_secret']
         else:
             raise TypeError('cert must be Certification object')
-        global luis
-        luis = LanguageUnderstanding(cert)
 
     def intent(self, intent):
         """Intent register decorator for the main function to handle.
@@ -57,24 +54,38 @@ class WebhookHandler:
             return func
         return decorator
 
+    def default(self):
+        def decorator(func):
+            self.intents['default'] = func
+            return func
+        return decorator
+
+    @default
+    def default_handler(self, event):
+        logging.info(f'Default handler {event}')
+
     def handle(self, body, x_signature):
         """Handle webhook request from Line."""
-        channel_secret = self._cert['Line']['channel_secret']
+        channel_secret = self.channel_secret
 
-        # if fail to validate signature,will raise InvalidSignatureError
+        # If fail to validate signature,will raise InvalidSignatureError
         if validate_signature(body, x_signature, channel_secret) != True:
             raise InvalidSignatureError(
                 'Invalid signature. Please check your channel access token/channel secret.')
 
         body = json.loads(body)
         event = body['events'][0]
-        message = event['message']['text']
-        intent: Intent = luis.analyze_message(message)
 
-        # intent = Intent.new_from_dict()
-        if intent.topIntent in self.intents:
-
-            self.intents[intent.topIntent](event, intent)
-        else:
-            raise ValueError(
-                'No intent handler for intent: ' + intent.topIntent)
+        try:
+            message = event['message']['text']
+            predict = ChatGPT.get_intent(message)
+            self.intents[predict.intent](event, predict)
+        except Exception:
+            if event['type'] == 'follow':
+                return
+            func = self.intents.get('error')
+            if func is not None:
+                func(event, predict)
+            else:
+                logging.error('From handler:'+traceback.format_exc())
+                self.intents['default'](event)

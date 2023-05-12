@@ -1,8 +1,8 @@
-from .base_api import BaseApi
-from .certify import Certification
-import json
+from ..base_api import BaseApi
+from ..certify import Certification
 
 
+#! Deprecated class
 class LanguageUnderstanding(BaseApi):
 
     def __init__(self, cert, headers=None, callback=None, timeout=30, endpoint=None, intent_vault=0, project_name=None, deploy_name=None) -> None:
@@ -73,16 +73,6 @@ class Intent:
             self.topIntent = None
             self.intents = None
             self.entities = None
-
-    @staticmethod
-    def new_from_dict(data):
-        intent = Intent({})
-        data = json.loads(data)
-        intent.query = data['query']
-        intent.intents = data['intents']
-        intent.topIntent = data['intent']
-        intent.entities = data['entities']
-        return intent
 
 
 if __name__ == '__main__':
