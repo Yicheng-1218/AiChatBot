@@ -100,8 +100,14 @@ def custom_search(event, _):
     # Google搜尋
     resp_normal=google_search.normal_search(user_query,advanced=True,num_results=3)
     resp_custom=google_search.custom_search(user_query,advanced=True,num_results=3)
-    data=list(resp_normal)+list(resp_custom)
-    result = ''.join([f'[{i+1}]{k.title}\n{k.description}\nURL:{k.url}\n\n' for i,k in enumerate(data)])
+    
+    resp_normal=resp_normal if resp_normal is not None else []
+    resp_custom=resp_custom if resp_custom is not None else []
+    data=set(list(resp_normal)+list(resp_custom))
+    if len(data)!=0:
+        result = ''.join([f'[{i+1}]{k.title}\n{k.description}\nURL:{k.url}\n\n' for i,k in enumerate(data)])
+    else:
+        result='查無相關資訊'
     logging.info(result)
     
     
@@ -111,10 +117,11 @@ def custom_search(event, _):
     Your task is to provide assistance to users based on the search results between the three backticks.
 
     Your answer should include the following:
-    - Only choose three most relevant data points for reference.
     - List solutions steps by steps to solve the problem. <if applicable>
     - Other relevant suggestions.
-    - List reference links at the end of the answer using [num](URL) format.
+    - Provide reference results at the end of the response, only use the search results between the three backticks and
+      listing a maximum of three references if there are more than three.
+    - Format the reference links in the following format: [1](url) ...
     - Response in Traditional Chinese.
 
     search results: ```{result}```

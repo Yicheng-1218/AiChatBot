@@ -7,3 +7,4 @@ requests
 lxml
 openai
 bs4
+pyuseragents

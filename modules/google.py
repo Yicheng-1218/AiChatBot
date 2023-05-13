@@ -1,23 +1,9 @@
 import random
-from time import sleep
+from time import sleep, time
 from bs4 import BeautifulSoup
 from .base_api import BaseApi
 from .certify import Certification
-
-
-_useragent_list = [
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
-    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36 Edg/111.0.1661.62',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0'
-]
-
-
-def get_useragent():
-    return random.choice(_useragent_list)
+import pyuseragents
 
 
 class GoogleSearch(BaseApi):
@@ -29,8 +15,12 @@ class GoogleSearch(BaseApi):
 
     def custom_search(self, term, num_results=10, lang="zh-tw", advanced=False, sleep_interval=0, timeout=5):
         escaped_term = term.replace(" ", "+")
+
+        time_stamp = time()
         start = 0
         while start < num_results:
+            if time()-time_stamp > timeout:
+                break
             params = {
                 'cx': self._cx,
                 'key': self._key,
@@ -40,7 +30,7 @@ class GoogleSearch(BaseApi):
             }
             headers = {
                 "Content-Type": "application/json; charset=UTF-8",
-                "User-Agent": get_useragent()
+                "User-Agent": pyuseragents.random()
             }
             resp = super().get('https://www.googleapis.com/customsearch/v1',
                                params, headers=headers, timeout=timeout)
@@ -67,8 +57,11 @@ class GoogleSearch(BaseApi):
         escaped_term = term.replace(" ", "+")
 
         # Fetch
+        time_stamp = time()
         start = 0
         while start < num_results:
+            if time()-time_stamp > timeout:
+                break
             # Send request
             params = {
                 "q": escaped_term,
@@ -77,7 +70,7 @@ class GoogleSearch(BaseApi):
                 "start": start,
             }
             headers = {
-                "User-Agent": get_useragent()
+                "User-Agent": pyuseragents.random()
             }
             resp = super().get("https://www.google.com/search",
                                params, headers=headers, timeout=timeout)
@@ -113,3 +106,11 @@ class SearchResult:
 
     def __repr__(self):
         return f"SearchResult(url={self.url}, title={self.title}, description={self.description})"
+
+    def __eq__(self, __value: object) -> bool:
+        if isinstance(__value, SearchResult):
+            return self.title == __value.title
+        return False
+
+    def __hash__(self) -> int:
+        return hash(self.title)
