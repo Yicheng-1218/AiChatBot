@@ -32,7 +32,7 @@ FlexiBot is an AI-powered chatbot framework that utilizes LINE Message API, Chat
 
 ## Usage
 1. Set up environment variables for LINE API and Azure Functions credentials.
-2. Define your intents and handlers similar to Flask routers. For example:
+2. Define your intents and handlers similar to specific routers. For example:
    ```
    @handler.intent('Inquire About Fraudulent TEL')
    def search_tel(event, intent):
