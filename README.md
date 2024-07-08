@@ -10,6 +10,8 @@ FlexiBot is an AI-powered chatbot framework that utilizes LINE Message API, Chat
 - Flexible architecture to adapt to various domains
 - Uses Python with a router-like structure similar to Flask for handling intents
 
+![structure](/images/structure.png)
+
 ## Installation
 ### Prerequisites
 - Python 3.x
