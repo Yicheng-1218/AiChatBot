@@ -10,7 +10,7 @@ FlexiAgent is an AI-powered chatbot framework that utilizes LINE Message API, Ch
 - Flexible architecture to adapt to various domains
 - Uses Python with a router-like structure similar to Flask for handling intents
 
-![structure](/images/structure.png)
+![structure](https://github.com/Yicheng-1218/FlexiAgent/assets/72242651/29dbbf5d-51fa-4b1b-b1c6-c162bfe7806e)
 
 ## Installation
 ### Prerequisites
