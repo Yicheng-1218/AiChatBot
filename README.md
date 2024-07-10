@@ -1,7 +1,7 @@
 # FlexiAgent
 
 ## Overview
-FlexiBot is an AI-powered chatbot framework that utilizes LINE Message API, ChatGPT, and Azure Functions as a Service (FaaS). This project showcases a flexible approach that can be adapted for various domains such as debunking misinformation, business customer service, and more. The core functionality involves analyzing user intentions with GPT, scraping information from specified sources, filtering and summarizing the information, and providing the final response back to the user.
+FlexiAgent is an AI-powered chatbot framework that utilizes LINE Message API, ChatGPT, and Azure Functions as a Service (FaaS). This project showcases a flexible approach that can be adapted for various domains such as debunking misinformation, business customer service, and more. The core functionality involves analyzing user intentions with GPT, scraping information from specified sources, filtering and summarizing the information, and providing the final response back to the user.
 
 ## Features
 - Analyzes user intentions using ChatGPT
