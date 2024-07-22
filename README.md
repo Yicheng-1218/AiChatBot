@@ -21,7 +21,7 @@ FlexiAgent is an AI-powered chatbot framework that utilizes LINE Message API, Ch
 ### Installation Steps
 1. Clone this repository:
    ```
-   git clone https://github.com/yourusername/FlexiBot.git
+   git clone https://github.com/Yicheng-1218/FlexiAgent.git
    ```
 2. Navigate to the project directory:
    ```
