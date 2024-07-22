@@ -25,7 +25,7 @@ FlexiAgent is an AI-powered chatbot framework that utilizes LINE Message API, Ch
    ```
 2. Navigate to the project directory:
    ```
-   cd FlexiBot
+   cd FlexiAgent
    ```
 3. Install dependencies:
    ```
