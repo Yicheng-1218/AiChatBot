@@ -139,3 +139,4 @@ api_key.json
 
 # testing stuff
 test.*
+.vscode/
