@@ -25,7 +25,7 @@ AiChatBot is an AI-powered chatbot framework that utilizes LINE Message API, Cha
    ```
 2. Navigate to the project directory:
    ```
-   cd FlexiAgent
+   cd AiChatBot
    ```
 3. Install dependencies:
    ```
