@@ -49,3 +49,6 @@ AiChatBot is an AI-powered chatbot framework that utilizes LINE Message API, Cha
 
 ## Contact Information
 If you have any questions, please submit an issue.
+
+## License
+This project is released under the MIT License. If you find it useful or would like to reference it in your work, attribution is appreciated!
